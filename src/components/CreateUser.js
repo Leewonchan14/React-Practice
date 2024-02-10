@@ -1,8 +1,19 @@
-import React from 'react';
+import React, {memo, useContext, useEffect, useRef} from 'react';
+import {UserDispatch} from "../App";
+import useInput from "../hooks/useInput";
 
-function CreateUser({username, email, onChange, onCreate}) {
+function CreateUser() {
+    const nextId = useRef(4);
+
+    let [{username, email}, onChange, reset] = useInput({
+        username: "",
+        email: "",
+    });
+
+    const dispatch = useContext(UserDispatch)
+
     return (
-        <div>
+        <div style={{marginTop:"300px"}}>
             <input type="text" name={"username"} placeholder={"계정명"}
                    onChange={onChange} value={username}
             />
@@ -12,10 +23,21 @@ function CreateUser({username, email, onChange, onCreate}) {
                    onChange={onChange}
                    value={email}
             />
-            <button onClick={onCreate}>등록</button>
+            <button onClick={() =>{
+                dispatch({
+                    type: "CREATE_USER",
+                    user: {
+                        id: nextId.current,
+                        username,
+                        email,
+                    },
+                })
+                reset()
+                nextId.current += 1;
+            }}>등록</button>
         </div>
 
     );
 }
 
-export default CreateUser;
+export default memo(CreateUser);
